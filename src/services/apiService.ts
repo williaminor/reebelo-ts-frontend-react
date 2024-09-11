@@ -18,7 +18,7 @@ const api = axios.create({
 export const getProducts = async (): Promise<ProductsResponse> => {
   try {
     const response = await api.get("/products");
-    return response.data;
+    return response;
   } catch (err) {
     console.error("Error fetching products:", err);
     throw err;
@@ -36,6 +36,20 @@ export const createProduct = async (productData: {
     return response.data;
   } catch (err) {
     console.error("Error creating product:", err);
+    throw err;
+  }
+};
+
+//update product
+export const updateProduct = async (
+  id: string,
+  productData: Omit<Product, "_id">
+): Promise<Product> => {
+  try {
+    const response = await axios.put<Product>(`/products/${id}`, productData);
+    return response.data;
+  } catch (err) {
+    console.error("Error updating product:", err);
     throw err;
   }
 };
