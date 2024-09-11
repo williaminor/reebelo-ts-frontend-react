@@ -1,5 +1,6 @@
 import React from "react";
-import "./Modal.css"; // Import the CSS file
+import "./Modal.css";
+import { Link } from "react-router-dom";
 
 interface ModalProps {
   show: boolean;
@@ -16,8 +17,8 @@ const Modal: React.FC<ModalProps> = ({ show, onClose, title, children }) => {
       <div className="modal-container">
         <h2>{title}</h2>
         <div>{children}</div>
-        <button onClick={onClose} className="close-button">
-          Close
+        <button onClick={onClose} className="close-button float-right">
+          <Link to={"/products"}>Close</Link>
         </button>
       </div>
     </div>
