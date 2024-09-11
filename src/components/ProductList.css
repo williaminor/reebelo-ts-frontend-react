@@ -1,0 +1,27 @@
+.product-list {
+  padding: 0px 40px;
+}
+
+.product-list .product-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.product-list .product-list-header button a {
+  text-decoration: none;
+  color: #fff;
+  font-size: 14px;
+}
+
+.product-list .product-list-header button {
+  padding: 8px 10px;
+  background-color: #4caf50;
+  border: none;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.product-list .product-list-header button:hover {
+  background-color: #45a049;
+}
