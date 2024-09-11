@@ -1,69 +1,103 @@
 import React, { useState, useEffect } from "react";
-import { getProducts, createProduct } from "../services/apiService";
-import { Product, ProductsResponse } from "../types/types";
+import { Product } from "../types/types";
+import "./ProductForm.css";
+import Modal from "./Modal";
 
-const ProductForm: React.FC = () => {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [name, setName] = useState<string>("");
-  const [price, setPrice] = useState<number>(0);
-  const [stockQuantity, setStockQuantity] = useState<number>(0);
+interface ProductFormProps {
+  product?: Product;
+  onSubmit: (productData: Omit<Product, "_id">) => void;
+  isEditing?: boolean;
+}
 
-  const fetchProducts = async () => {
-    try {
-      const response = await getProducts();
-      setProducts(response.data);
-    } catch (err) {
-      console.error("Error fetching products:", err);
-    }
-  };
+const ProductForm: React.FC<ProductFormProps> = ({
+  product,
+  onSubmit,
+  isEditing,
+}) => {
+  const [name, setName] = useState<string>(product?.name || "");
+  const [price, setPrice] = useState<number>(product?.price || 0);
+  const [stockQuantity, setStockQuantity] = useState<number>(
+    product?.stockQuantity || 0
+  );
+  const [error, setError] = useState<string>("");
+  const [showModal, setShowModal] = useState<boolean>(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    try {
-      await createProduct({ name, price, stockQuantity });
-      fetchProducts();
-    } catch (error) {
-      console.error("Error creating product:", error);
+
+    if (!name.trim()) {
+      setError("Product name is required");
+      return;
     }
+    if (price <= 0) {
+      setError("Price must be a positive number");
+      return;
+    }
+    if (stockQuantity < 0) {
+      setError("Stock quantity must be a non-negative number");
+      return;
+    }
+
+    setError("");
+    onSubmit({ name, price, stockQuantity });
+    setShowModal(true);
   };
 
   useEffect(() => {
-    fetchProducts();
-  }, []);
+    if (product) {
+      setName(product.name);
+      setPrice(product.price);
+      setStockQuantity(product.stockQuantity);
+    }
+  }, [product]);
 
   return (
-    <div>
-      <h2>Create New Product</h2>
+    <div className="product-form">
+      <h2>{isEditing ? "Edit Product" : "Create New Product"}</h2>
+      {error && <p className="error text-red">{error}</p>}
       <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder="Product Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
-        <input
-          type="number"
-          placeholder="Price"
-          value={price}
-          onChange={(e) => setPrice(Number(e.target.value))}
-        />
-        <input
-          type="number"
-          placeholder="Stock Quantity"
-          value={stockQuantity}
-          onChange={(e) => setStockQuantity(Number(e.target.value))}
-        />
-        <button type="submit">Create Product</button>
+        <div className="form-group">
+          <label htmlFor="name">Product Name:</label>
+          <input
+            type="text"
+            id="name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+        </div>
+        <div className="form-group">
+          <label htmlFor="price">Price:</label>
+          <input
+            type="number"
+            id="price"
+            value={price}
+            onChange={(e) => setPrice(Number(e.target.value))}
+          />
+        </div>
+        <div className="form-group">
+          <label htmlFor="stockQuantity">Stock Quantity:</label>
+          <input
+            type="number"
+            id="stockQuantity"
+            value={stockQuantity}
+            onChange={(e) => setStockQuantity(Number(e.target.value))}
+          />
+        </div>
+        <button type="submit">
+          {isEditing ? "Update Product" : "Create Product"}
+        </button>
       </form>
-
-      <h3>Product List</h3>
-      <ul>
-        {products.map((product) => (
-          <li key={product._id}>
-            {product.name} - ${product.price} - {product.stockQuantity} in stock
-          </li>
-        ))}
-      </ul>
+      <Modal
+        show={showModal}
+        onClose={() => setShowModal(false)}
+        title="Success"
+      >
+        <p>
+          {isEditing
+            ? "Product updated successfully!"
+            : "Product created successfully!"}
+        </p>
+      </Modal>
     </div>
   );
 };
