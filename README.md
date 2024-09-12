@@ -1,46 +1,69 @@
-# Getting Started with Create React App
+# **Reebelo Case Study Frontend (React with TypeScript)**
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## **Overview**
 
-## Available Scripts
+This is the frontend for the **Reebelo Case Study** built using **React** with **TypeScript**. The project handles product and order management, allowing users to create, view, and update products and orders.
 
-In the project directory, you can run:
+---
 
-### `npm start`
+## **Technologies Used**
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+- **React**: JavaScript library for building user interfaces.
+- **TypeScript**: Adds static typing to JavaScript for improved code quality and reliability.
+- **Redux Toolkit**: For state management across components.
+- **Axios**: For making HTTP requests to the backend.
+- **React Router**: For client-side routing.
+- **React Bootstrap**: For responsive and styled UI components.
+- **Jest & React Testing Library**: For unit and integration testing.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## **Setup Instructions**
 
-### `npm test`
+### **1. Clone the repository**
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```bash
+git clone <repository-url>
+cd frontend
+```
 
-### `npm run build`
+### **2. Install dependencies**
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```bash
+npm install
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### **3. Environment Variables**
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Create a `.env` file in the root directory to define the backend API URL:
 
-### `npm run eject`
+```env
+REACT_APP_API_URL=http://localhost:5000/api
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+### **4. Run the application**
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```bash
+npm start
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+This will start the React development server on `http://localhost:3000`.
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+---
 
-## Learn More
+## **Key Features**
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+- **Product Management**: Create, view, edit, and delete products.
+- **Order Management**: Create orders, update order status, and shipping information.
+- **Pagination**: Handles paginated data fetching for both products and orders.
+- **State Management**: Centralized state management using **Redux Toolkit** for handling products and orders efficiently.
+- **Validation**: Form validation for creating and updating products and orders.
+- **Lazy Loading**: Uses React’s **Suspense** for lazy-loading large components.
+- **Styled UI**: Uses **React Bootstrap** for a consistent and responsive user interface.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+---
+
+## **Project Features**
+
+- **Scalability**: Designed to handle millions of users and products using Redux for efficient state management and Axios for API interaction.
+- **Pagination**: Implements custom pagination to handle large datasets for products and orders.
+- **Error Handling**: Toastr-style notifications for handling success and error messages.
+- **User Experience**: Intuitive UI designed for usability, with quick feedback on actions like adding, updating, or deleting products.
