@@ -1,34 +1,39 @@
 import React from "react";
-import "./Dropdown.css";
+import { Form } from "react-bootstrap";
 
 interface DropdownProps {
-  options: { id: string; label: string }[];
-  onChange: (selectedValue: string) => void;
-  selectedValue: string;
-  label: string;
+  options: string[];
+  onSelect: (option: string) => void;
+  placeholder?: string;
+  value?: string;
 }
 
 const Dropdown: React.FC<DropdownProps> = ({
   options,
-  onChange,
-  selectedValue,
-  label,
+  onSelect,
+  placeholder = "Select...",
+  value,
 }) => {
+  const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    onSelect(event.target.value);
+  };
+
   return (
-    <div>
-      <label>{label}</label>
-      <select
-        value={selectedValue}
-        onChange={(e) => onChange(e.target.value)}
-        className="dropdown-select"
+    <div className="dropdown-container">
+      <Form.Select
+        value={value || ""}
+        onChange={handleChange}
+        className="dropdown-select py-0"
       >
-        <option value="">Select an option</option>
+        <option value="" disabled>
+          {placeholder}
+        </option>
         {options.map((option) => (
-          <option key={option.id} value={option.id}>
-            {option.label}
+          <option key={option} value={option}>
+            {option}
           </option>
         ))}
-      </select>
+      </Form.Select>
     </div>
   );
 };
