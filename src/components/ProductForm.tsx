@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Product } from "../types/types";
-import "./ProductForm.css";
-import Modal from "./Modal";
+import ConfirmModal from "./ConfirmModal";
+import { Form, Button, Container, Alert } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 
 interface ProductFormProps {
   product?: Product;
@@ -20,7 +21,18 @@ const ProductForm: React.FC<ProductFormProps> = ({
     product?.stockQuantity || 0
   );
   const [error, setError] = useState<string>("");
-  const [showModal, setShowModal] = useState<boolean>(false);
+  const [showConfirmModal, setShowConfirmModal] = useState<boolean>(false);
+  const navigate = useNavigate();
+
+  const handleConfirm = () => {
+    onSubmit({ name, price, stockQuantity });
+    navigate("/products");
+    setShowConfirmModal(false);
+  };
+
+  const handleClose = () => {
+    setShowConfirmModal(false);
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,8 +51,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
     }
 
     setError("");
-    onSubmit({ name, price, stockQuantity });
-    setShowModal(true);
+    setShowConfirmModal(true);
   };
 
   useEffect(() => {
@@ -52,53 +63,62 @@ const ProductForm: React.FC<ProductFormProps> = ({
   }, [product]);
 
   return (
-    <div className="product-form">
-      <h2>{isEditing ? "Edit Product" : "Create New Product"}</h2>
-      {error && <p className="error text-red">{error}</p>}
-      <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label htmlFor="name">Product Name:</label>
-          <input
+    <Container>
+      {error && <Alert variant="danger">{error}</Alert>}
+      <Form onSubmit={handleSubmit}>
+        <Form.Group controlId="name" className="mt-2">
+          <Form.Label>Product Name</Form.Label>
+          <Form.Control
             type="text"
-            id="name"
+            placeholder="Enter product name"
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
-        </div>
-        <div className="form-group">
-          <label htmlFor="price">Price:</label>
-          <input
+        </Form.Group>
+
+        <Form.Group controlId="price" className="mt-2">
+          <Form.Label>Price</Form.Label>
+          <Form.Control
             type="number"
-            id="price"
+            placeholder="Enter price"
             value={price}
             onChange={(e) => setPrice(Number(e.target.value))}
           />
-        </div>
-        <div className="form-group">
-          <label htmlFor="stockQuantity">Stock Quantity:</label>
-          <input
+        </Form.Group>
+
+        <Form.Group controlId="stockQuantity" className="mt-2">
+          <Form.Label>Stock Quantity</Form.Label>
+          <Form.Control
             type="number"
-            id="stockQuantity"
+            placeholder="Enter stock quantity"
             value={stockQuantity}
             onChange={(e) => setStockQuantity(Number(e.target.value))}
           />
-        </div>
-        <button type="submit">
+        </Form.Group>
+
+        <Button variant="primary" type="submit" className="mt-3">
           {isEditing ? "Update Product" : "Create Product"}
-        </button>
-      </form>
-      <Modal
-        show={showModal}
-        onClose={() => setShowModal(false)}
-        title="Success"
-      >
-        <p>
-          {isEditing
-            ? "Product updated successfully!"
-            : "Product created successfully!"}
-        </p>
-      </Modal>
-    </div>
+        </Button>
+      </Form>
+
+      {isEditing ? (
+        <ConfirmModal
+          show={showConfirmModal}
+          onClose={handleClose}
+          onConfirm={handleConfirm}
+          title="Are you sure?"
+          message="Do you really want to update this product?"
+        />
+      ) : (
+        <ConfirmModal
+          show={showConfirmModal}
+          onClose={handleClose}
+          onConfirm={handleConfirm}
+          title="Are you sure?"
+          message="Do you really want to create this product?"
+        />
+      )}
+    </Container>
   );
 };
 

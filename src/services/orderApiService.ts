@@ -1,11 +1,5 @@
 import axios from "axios";
-import {
-  Product,
-  Order,
-  TrackingInfo,
-  OrderResponse,
-  ProductsResponse,
-} from "../types/types";
+import { Order, TrackingInfo, OrderResponse } from "../types/types";
 
 const api = axios.create({
   baseURL: process.env.REACT_APP_API_URL || "http://localhost:5000/api",
@@ -14,50 +8,30 @@ const api = axios.create({
   },
 });
 
-// fetch all products
-export const getProducts = async (): Promise<ProductsResponse> => {
+// get orders
+export const getOrders = async (): Promise<{ data: Order[] }> => {
   try {
-    const response = await api.get("/products");
-    return response;
+    const response = await api.get("orders");
+    console.log(response);
+    return response.data;
   } catch (err) {
-    console.error("Error fetching products:", err);
+    console.error("Error fetching orders:", err);
     throw err;
   }
 };
 
-// create a product
-export const createProduct = async (productData: {
-  name: string;
-  price: number;
-  stockQuantity: number;
-}): Promise<Product> => {
+// Get order by ID
+export const getOrderById = async (orderId: string): Promise<OrderResponse> => {
   try {
-    const response = await api.post("/products", productData);
+    const response = await api.get(`/orders/${orderId}`);
     return response.data;
-  } catch (err) {
-    console.error("Error creating product:", err);
-    throw err;
-  }
-};
-
-//update product
-export const updateProduct = async (
-  id: string,
-  productData: Omit<Product, "_id">
-): Promise<Product> => {
-  try {
-    const response = await axios.put<Product>(`/products/${id}`, productData);
-    return response.data;
-  } catch (err) {
-    console.error("Error updating product:", err);
-    throw err;
+  } catch (error) {
+    throw new Error("Error fetching order");
   }
 };
 
 // create an order
-export const createOrder = async (orderData: {
-  products: Order[];
-}): Promise<OrderResponse> => {
+export const createOrder = async (orderData: Order): Promise<OrderResponse> => {
   try {
     const response = await api.post("/orders", orderData);
     return response.data;
