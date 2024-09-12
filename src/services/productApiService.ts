@@ -8,12 +8,25 @@ const api = axios.create({
   },
 });
 
-// fetch all products
-export const getProducts = async (): Promise<ProductsResponse> => {
+// fetch products by pagination
+export const getProducts = async (
+  page: number,
+  limit: number
+): Promise<ProductsResponse> => {
   try {
-    const response = await api.get("/products");
-    console.log(response);
-    return response;
+    const response = await api.get(`/products?page=${page}&limit=${limit}`);
+    return response.data;
+  } catch (err) {
+    console.error("Error fetching products:", err);
+    throw err;
+  }
+};
+
+// fetch all products
+export const getAllProducts = async (): Promise<Product[]> => {
+  try {
+    const response = await api.get("/products/all");
+    return response.data;
   } catch (err) {
     console.error("Error fetching products:", err);
     throw err;

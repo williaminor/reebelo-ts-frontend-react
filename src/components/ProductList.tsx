@@ -1,38 +1,27 @@
-import React, { useState, useEffect } from "react";
-import { getProducts } from "../services/productApiService";
-import { Product } from "../types/types";
-import Pagination from "./CustomPagination";
+import React, { useEffect } from "react";
 import { Table, Button, Nav } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import { fetchProducts, setCurrentPage } from "../store/productSlice";
+import { useAppDispatch, useAppSelector } from "../hooks";
 import CustomPagination from "./CustomPagination";
 
 const ProductList: React.FC = () => {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const [totalPages, setTotalPages] = useState<number>(1);
-  const itemsPerPage = 5;
+  const dispatch = useAppDispatch();
+  const { items, currentPage, itemsPerPage, totalItems } = useAppSelector(
+    (state) => state.products
+  );
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await getProducts();
-        setProducts(response.data);
-        setTotalPages(Math.ceil(response.data.length / itemsPerPage));
-      } catch (error) {
-        console.error("Error fetching products:", error);
-      }
-    };
-    fetchProducts();
-  }, []);
+    dispatch(fetchProducts({ page: currentPage, limit: itemsPerPage }));
+  }, [dispatch, currentPage, itemsPerPage]);
+
+  useEffect(() => {
+    dispatch(fetchProducts({ page: currentPage, limit: itemsPerPage }));
+  }, [dispatch, currentPage, itemsPerPage]);
 
   const handlePageChange = (page: number) => {
-    setCurrentPage(page);
+    dispatch(setCurrentPage(page));
   };
-
-  const paginatedProducts = products.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
 
   return (
     <div className="container mt-4">
@@ -55,7 +44,7 @@ const ProductList: React.FC = () => {
           </tr>
         </thead>
         <tbody>
-          {paginatedProducts.map((product, index) => (
+          {items.map((product, index) => (
             <tr key={product._id}>
               <td>{(currentPage - 1) * itemsPerPage + index + 1}</td>
               <td>{product.name}</td>
@@ -76,19 +65,12 @@ const ProductList: React.FC = () => {
           ))}
         </tbody>
       </Table>
-
-      <div className="d-flex justify-content-between">
-        <p>
-          Showing {(currentPage - 1) * itemsPerPage + 1} to{" "}
-          {Math.min(currentPage * itemsPerPage, products.length)} of{" "}
-          {products.length}
-        </p>
-        <CustomPagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={handlePageChange}
-        />
-      </div>
+      <CustomPagination
+        currentPage={currentPage}
+        totalItems={totalItems}
+        itemsPerPage={itemsPerPage}
+        onPageChange={handlePageChange}
+      />
     </div>
   );
 };

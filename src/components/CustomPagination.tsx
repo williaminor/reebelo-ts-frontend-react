@@ -3,35 +3,42 @@ import { Pagination } from "react-bootstrap";
 
 interface PaginationProps {
   currentPage: number;
-  totalPages: number;
+  totalItems: number;
+  itemsPerPage: number;
   onPageChange: (page: number) => void;
 }
 
 const CustomPagination: React.FC<PaginationProps> = ({
   currentPage,
-  totalPages,
+  totalItems,
+  itemsPerPage,
   onPageChange,
 }) => {
-  const handlePrev = () => {
-    if (currentPage > 1) {
-      onPageChange(currentPage - 1);
-    }
-  };
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
 
-  const handleNext = () => {
-    if (currentPage < totalPages) {
-      onPageChange(currentPage + 1);
+  const handlePageChange = (page: number) => {
+    if (page >= 1 && page <= totalPages) {
+      onPageChange(page);
     }
   };
 
   return (
-    <Pagination>
-      <Pagination.Prev onClick={handlePrev} disabled={currentPage === 1} />
-      <Pagination.Item active>{currentPage}</Pagination.Item>
-      <Pagination.Next
-        onClick={handleNext}
-        disabled={currentPage === totalPages}
-      />
+    <Pagination className="d-flex justify-content-between">
+      <div>
+        Showing {itemsPerPage * (currentPage - 1) + 1} to{" "}
+        {Math.min(itemsPerPage * currentPage, totalItems)} of {totalItems}
+      </div>
+      <div className="d-flex">
+        <Pagination.Prev
+          disabled={currentPage === 1}
+          onClick={() => handlePageChange(currentPage - 1)}
+        />
+        <Pagination.Item>{currentPage}</Pagination.Item>
+        <Pagination.Next
+          disabled={currentPage === totalPages}
+          onClick={() => handlePageChange(currentPage + 1)}
+        />
+      </div>
     </Pagination>
   );
 };

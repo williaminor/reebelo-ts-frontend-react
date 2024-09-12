@@ -17,7 +17,6 @@ const UpdateProduct: React.FC = () => {
         const response = await getProductById(id!);
         setProduct(response.data);
       } catch (err) {
-        console.error("Error fetching product:", error);
         setError("Failed to fetch product.");
       }
     };

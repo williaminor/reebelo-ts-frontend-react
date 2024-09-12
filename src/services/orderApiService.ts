@@ -1,5 +1,10 @@
 import axios from "axios";
-import { Order, TrackingInfo, OrderResponse } from "../types/types";
+import {
+  Order,
+  TrackingInfo,
+  OrderResponse,
+  OrdersResponse,
+} from "../types/types";
 
 const api = axios.create({
   baseURL: process.env.REACT_APP_API_URL || "http://localhost:5000/api",
@@ -9,10 +14,12 @@ const api = axios.create({
 });
 
 // get orders
-export const getOrders = async (): Promise<{ data: Order[] }> => {
+export const getOrders = async (
+  page: number,
+  limit: number
+): Promise<OrdersResponse> => {
   try {
-    const response = await api.get("orders");
-    console.log(response);
+    const response = await api.get(`/orders?page=${page}&limit=${limit}`);
     return response.data;
   } catch (err) {
     console.error("Error fetching orders:", err);

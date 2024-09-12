@@ -23,7 +23,13 @@ export interface TrackingInfo {
 }
 
 export interface ProductsResponse {
-  data: Product[];
+  products: Product[];
+  totalItems: number;
+}
+
+export interface OrdersResponse {
+  orders: Order[];
+  totalItems: number;
 }
 
 export interface OrderResponse {

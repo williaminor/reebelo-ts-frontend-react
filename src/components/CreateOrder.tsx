@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { createOrder } from "../services/orderApiService";
-import { getProducts } from "../services/productApiService";
+import { getAllProducts } from "../services/productApiService";
 import { OrderItem, Product } from "../types/types";
 import { Table, Form, Button, Alert } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
@@ -36,8 +36,8 @@ const CreateOrder: React.FC = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await getProducts();
-        setProducts(response.data);
+        const response = await getAllProducts();
+        setProducts(response);
       } catch (error) {
         setError("Failed to fetch products");
       }
@@ -69,7 +69,7 @@ const CreateOrder: React.FC = () => {
   };
 
   return (
-    <div className="container mt-5">
+    <div className="container my-5">
       <h4 className="mb-4">Add New Order</h4>
       {error && <Alert variant="danger">{error}</Alert>}
       <Table striped bordered hover>

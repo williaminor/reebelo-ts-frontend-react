@@ -1,42 +1,31 @@
-import React, { useState, useEffect } from "react";
-import { getOrders, updateOrderStatus } from "../services/orderApiService";
-import { Order } from "../types/types";
+import React, { useEffect } from "react";
 import Dropdown from "./Dropdown";
 import { Button, Table, Nav } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import CustomPagination from "./CustomPagination";
+import { useAppDispatch, useAppSelector } from "../hooks";
+import {
+  fetchOrders,
+  setCurrentPage,
+  updateOrderStatusThunk,
+} from "../store/orderSlice";
 
 const OrderList: React.FC = () => {
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [error, setError] = useState<string | null>(null);
+  const dispatch = useAppDispatch();
+  const { items, currentPage, itemsPerPage, totalItems } = useAppSelector(
+    (state) => state.orders
+  );
 
   useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        const response = await getOrders();
-        setOrders(response.data);
-      } catch (error) {
-        setError("Failed to fetch orders");
-      }
-    };
+    dispatch(fetchOrders({ page: currentPage, limit: itemsPerPage }));
+  }, [dispatch, currentPage, itemsPerPage]);
 
-    fetchOrders();
-  }, []);
+  const handleStatusChange = (orderId: string, status: string) => {
+    dispatch(updateOrderStatusThunk({ orderId, status }));
+  };
 
-  const handleStatusChange = async (orderId: string, status: string) => {
-    const previousOrders = [...orders];
-
-    const updatedOrders = orders.map((order) =>
-      order._id === orderId ? { ...order, status } : order
-    );
-    setOrders(updatedOrders);
-
-    try {
-      await updateOrderStatus(orderId, status);
-    } catch (error) {
-      console.error("Error updating status", error);
-      setOrders(previousOrders);
-      setError("Failed to update status");
-    }
+  const handlePageChange = (page: number) => {
+    dispatch(setCurrentPage(page));
   };
 
   return (
@@ -60,8 +49,8 @@ const OrderList: React.FC = () => {
           </tr>
         </thead>
         <tbody>
-          {orders.length > 0 ? (
-            orders.map((order, index) => (
+          {items ? (
+            items.map((order, index) => (
               <tr key={order._id}>
                 <td>{index + 1}</td>
                 <td>{order._id}</td>
@@ -93,7 +82,12 @@ const OrderList: React.FC = () => {
         </tbody>
       </Table>
 
-      {error && <p className="text-danger">{error}</p>}
+      <CustomPagination
+        currentPage={currentPage}
+        totalItems={totalItems}
+        itemsPerPage={itemsPerPage}
+        onPageChange={handlePageChange}
+      />
     </div>
   );
 };
