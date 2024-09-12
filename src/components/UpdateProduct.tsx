@@ -1,25 +1,24 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { getProducts, updateProduct } from "../services/apiService";
+import { getProductById, updateProduct } from "../services/productApiService";
 import ProductForm from "./ProductForm";
 import { Product } from "../types/types";
+import { Container } from "react-bootstrap";
+import { toast } from "react-toastify";
 
 const UpdateProduct: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [product, setProduct] = useState<Product | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const response = await getProducts();
-        const selectedProduct = response.data.find(
-          (p: Product) => p._id === id
-        );
-        if (selectedProduct) {
-          setProduct(selectedProduct);
-        }
-      } catch (error) {
+        const response = await getProductById(id!);
+        setProduct(response.data);
+      } catch (err) {
         console.error("Error fetching product:", error);
+        setError("Failed to fetch product.");
       }
     };
     fetchProduct();
@@ -32,14 +31,17 @@ const UpdateProduct: React.FC = () => {
   }) => {
     try {
       await updateProduct(id!, productData);
-      alert("Product updated successfully!");
+      toast.success("Product updated successfully!");
     } catch (error) {
-      console.error("Error updating product:", error);
+      toast.error("Failed to update product.");
+      setError("Failed to update product.");
     }
   };
 
   return (
-    <div>
+    <Container className="mt-4">
+      <h4>Edit Product</h4>
+      {error && <p className="text-danger">{error}</p>}
       {product ? (
         <ProductForm
           product={product}
@@ -49,7 +51,7 @@ const UpdateProduct: React.FC = () => {
       ) : (
         <p>Loading product...</p>
       )}
-    </div>
+    </Container>
   );
 };
 
